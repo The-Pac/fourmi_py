@@ -14,9 +14,13 @@ class Node(arcade.SpriteCircle):
         self.center_y = position[1]
         self.name = name
         self.sucre = False
+        self.list_pair = list()
 
     def set_sucre(self, position, sucre, node_color):
         super().__init__(10, node_color)
         self.center_x = position[0]
         self.center_y = position[1]
         self.sucre = sucre
+
+    def set_pair(self, pair):
+        self.list_pair.append(pair)

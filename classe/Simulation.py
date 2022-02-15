@@ -9,8 +9,8 @@ from classe.Fourmi import Fourmi
 NODE_NBR = 10
 NODE_PAIR_NBR = 2
 
-FOURMI_NBR = 100
-SPEED = 2
+FOURMI_NBR = 1
+FOURMI_SPEED = 2
 
 NODE_CIRCLE_RADIUS = 10
 FOURMI_CIRCLE_RADIUS = 5
@@ -19,11 +19,19 @@ NODE_COlOR = (0, 255, 0)
 NODE_SUCRE_COlOR = (0, 0, 255)
 FOURMI_COLOR = (255, 0, 0)
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 700
 
 
 class Simulation(arcade.Window):
+    """
+        -Cree une list de bar && fourmi && node
+        -Ajoute une list de node && pair au jeu
+        -Ajoute une list de fourmi au jeu
+        -Ajoute un sucre a un noeud aleatoire
+        -Defini les bar par rapport au paire
+    """
+
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Simulation")
 
@@ -38,7 +46,12 @@ class Simulation(arcade.Window):
                                                             NODE_CIRCLE_RADIUS,
                                                             NODE_COlOR)
 
-        rand_node = random.choice(self.list_node)
+        for i in range(0, FOURMI_NBR):
+            position = (self.list_pair[0].node1.center_x, self.list_pair[0].node1.center_y)
+            fourmi = Fourmi(position, self.list_pair[0].node1, FOURMI_SPEED)
+            self.fourmi_list.append(fourmi)
+
+        rand_node = self.list_node[random.randint(1, len(self.list_node) - 1)]
         rand_node.set_sucre(rand_node.position, True, NODE_SUCRE_COlOR)
 
         for node in self.list_node:
@@ -47,14 +60,19 @@ class Simulation(arcade.Window):
         for index, pair in enumerate(self.list_pair):
             self.bar[index] = [pair.node1.center_x, pair.node1.center_y, pair.node2.center_x, pair.node2.center_y]
 
-        for i in range(0, FOURMI_NBR):
-            position = (self.list_pair[0].node1.center_x, self.list_pair[0].node1.center_y)
-            fourmi = Fourmi(position, FOURMI_CIRCLE_RADIUS, FOURMI_COLOR)
-            self.fourmi_list.append(fourmi)
+    """
+        update chaque list
+    """
 
     def update(self, delta_time):
         self.node_list.update()
         self.fourmi_list.update()
+
+    """
+        -Affiche chaque bar
+        -Affiche un text sur chaque noeud
+        -dessine les list fourmi / node
+    """
 
     def on_draw(self):
         arcade.start_render()
