@@ -26,7 +26,8 @@ class Graph:
         list_pair = list()
 
         for i in range(len(list_node)):
-            random_point = self.point((screen_w / 2), (screen_h / 2), (screen_h / 2) - 50)
+            # random_point = self.point((screen_w / 2), (screen_h / 2), (screen_h / 2) - 50)
+            random_point = self.point((screen_w / 2), (screen_h / 2), rand.randint(50, (screen_h / 2)))
             position = (random_point[0], random_point[1])
             # position = (random.randrange(50, screen_w), random.randrange(50, screen_h))
             list_node[i] = Node(position, circle_rad, color, i)
@@ -35,12 +36,14 @@ class Graph:
             for i in range(node_pair_nbr):
                 rand_node = rand.choice(list_node)
                 if list_node[j] != rand_node:
-                    list_node[j].set_pair(rand_node)
-                    list_pair.append(PairNode.PairNode(list_node[j], rand_node, 0))
+                    pair = PairNode.PairNode(list_node[j], rand_node, 1)
+                    list_node[j].set_pair(pair)
+                    list_pair.append(pair)
                 else:
                     while list_node[j] == rand_node:
                         rand_node = rand.choice(list_node)
-                    list_node[j].set_pair(rand_node)
-                    list_pair.append(PairNode.PairNode(list_node[j], rand_node, 0))
+                    pair = PairNode.PairNode(list_node[j], rand_node, 1)
+                    list_node[j].set_pair(pair)
+                    list_pair.append(pair)
 
         return list_node, list_pair

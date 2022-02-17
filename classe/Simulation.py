@@ -6,13 +6,14 @@ from classe import Graph
 from classe.Fourmi import Fourmi
 
 # --- Constants ---
-NODE_NBR = 10
+NODE_NBR = 500
+# minim 2 pair
 NODE_PAIR_NBR = 2
 
-FOURMI_NBR = 1
+FOURMI_NBR = 1000
 FOURMI_SPEED = 2
 
-NODE_CIRCLE_RADIUS = 10
+NODE_CIRCLE_RADIUS = 15
 FOURMI_CIRCLE_RADIUS = 5
 
 NODE_COlOR = (0, 255, 0)
@@ -35,13 +36,13 @@ class Simulation(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Simulation")
 
-        self.bar = list(range(0, (NODE_NBR - 1) * NODE_PAIR_NBR))
+        self.bar = list(range(0, NODE_NBR * NODE_PAIR_NBR))
 
         self.fourmi_list = arcade.SpriteList()
         self.node_list = arcade.SpriteList()
 
         graph = Graph.Graph()
-        self.list_node, self.list_pair = graph.create_graph(NODE_NBR - 1, NODE_PAIR_NBR, SCREEN_WIDTH - 50,
+        self.list_node, self.list_pair = graph.create_graph(NODE_NBR, NODE_PAIR_NBR, SCREEN_WIDTH - 50,
                                                             SCREEN_HEIGHT - 50,
                                                             NODE_CIRCLE_RADIUS,
                                                             NODE_COlOR)
@@ -65,7 +66,6 @@ class Simulation(arcade.Window):
     """
 
     def update(self, delta_time):
-        self.node_list.update()
         self.fourmi_list.update()
 
     """
@@ -75,6 +75,7 @@ class Simulation(arcade.Window):
     """
 
     def on_draw(self):
+        self.clear()
         arcade.start_render()
         self.node_list.draw()
         self.fourmi_list.draw()
@@ -85,4 +86,4 @@ class Simulation(arcade.Window):
                              bar[2], bar[3], color, 1)
 
         for node in self.list_node:
-            arcade.draw_text(str(node.name), node.center_x - 5, node.center_y - 5, arcade.color.BLACK, bold=True)
+            arcade.draw_text(str(node.name), node.center_x - 7.5, node.center_y - 7.5, arcade.color.BLACK, bold=True)

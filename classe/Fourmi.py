@@ -13,72 +13,98 @@ class Fourmi(arcade.Sprite):
     """
 
     def __init__(self, position, node, speed):
-        super().__init__(filename="C:/Users/pac/PycharmProjects/fourmi_py/img/ant.png", center_x=position[0],
+        super().__init__(filename="C:/Users/Pac/PycharmProjects/fourmi_py/img/ant.png", center_x=position[0],
                          center_y=position[1], scale=0.2)
         self.center_x = position[0]
         self.center_y = position[1]
+
         self.frame_count = 0
         self.road = list()
         self.road.append(node)
         self.actual_node = node
-        self.speed = speed
-        self.sucre_found = False
 
-    """
-        Update chaque 60 frame la position de la fourmi
-    """
+        self.speed = speed
+
+        self.direction_x = None
+        self.direction_y = None
+
+        self.on_move = False
+        self.direction_node = None
+        self.searching = True
 
     def update(self):
         self.frame_count += 1
-        # chaque 60 frame update la pos
-        if self.frame_count >= 60:
-            self.frame_count = 0
+        if not self.on_move:
             # si le noeud actuel a du sucre alors retourner au depart et placer des phero sur les pair
             if self.actual_node.sucre:
-                self.sucre_found = True
-                if len(self.road) > 0:
-                    self.road.pop()
-                    last_node = self.road.pop()
-                    self.center_x = last_node.center_x
-                    self.center_y = last_node.center_y
-                    self.actual_node = last_node
-                else:
-                    self.road = self.actual_node
+                self.searching = False
+                self.road.pop()
+                last_node = self.road.pop()
+                self.move(last_node)
             else:
                 # si le sucre est trouver chercher parmis toutes les noeuds la paire avec
                 # le plus de phero tout en faisant un aletoire entre ce noeuds et les autres
-                if self.sucre_found:
-                    pair_H_taux_phero = 0
-                    for pair in self.actual_node.list_pair:
-                        if pair_H_taux_phero == 0:
-                            pair_H_taux_phero = pair
-                        else:
-                            if pair.taux_phero >= pair_H_taux_phero.taux_phero:
-                                pair_H_taux_phero = pair.taux_phero
-
-                    self.center_x = pair_H_taux_phero.node2.center_x + self.speed
-                    self.center_y = pair_H_taux_phero.node2.center_y + self.speed
-
-                    self.actual_node = pair_H_taux_phero.node2
-                    self.road.append(pair_H_taux_phero.node2)
-
-                else:
-                    # si la le noeud actuel n'a pas qu'une paire
+                if self.searching:
+                    # si le noeud actuel n'a pas qu'une paire
                     if len(self.actual_node.list_pair) > 1:
                         # recuperer un noeud random qui n'est pas egal au dernier noeuds explorer
-                        rand_node = random.choice(self.actual_node.list_pair)
-                        if len(self.road) > 1:
-                            while self.road[len(self.road) - 2] == rand_node:
-                                rand_node = random.choice(self.actual_node.list_pair)
+                        list_pair_taux = list()
+                        for pair in self.actual_node.list_pair:
+                            list_pair_taux.append(pair.taux_phero)
+
+                        rand_pair = random.choices(self.actual_node.list_pair, list_pair_taux)
+                        rand_node = rand_pair[0].node2
+
                     # si le noeud n'a qu'une paire alors la prendre
                     else:
-                        rand_node = self.actual_node.list_pair[0]
+                        rand_node = self.actual_node.list_pair.node1
 
-                    self.center_x = rand_node.center_x + self.speed
-                    self.center_y = rand_node.center_y + self.speed
+                    self.move(rand_node)
+                else:
+                    if len(self.road) != 0:
+                        last_node = self.road.pop()
+                        for pair in last_node.list_pair:
+                            if pair.node1 == last_node or pair.node2 == last_node:
+                                pair.set_taux_phero(40)
+                                break
+                        self.move(last_node)
+                    else:
+                        self.road.append(self.actual_node)
+                        self.searching = True
 
-                    self.actual_node = rand_node
-                    self.road.append(rand_node)
+        else:
+            if int(self.center_x) == int(self.direction_x) \
+                    or int(self.center_x) == int(self.direction_x + 1) \
+                    or int(self.center_x) == int(self.direction_x - 1) \
+                    or int(self.center_y) == int(self.direction_y) \
+                    or int(self.center_y) == int(self.direction_y + 1) \
+                    or int(self.center_y) == int(self.direction_y - 1):
+                print("true")
+                self.on_move = False
+                self.change_x = 0
+                self.change_y = 0
+                self.actual_node = self.direction_node
+                if self.searching:
+                    self.road.append(self.direction_node)
+            else:
+                self.center_x += self.change_x
+                self.center_y += self.change_y
+
+    def move(self, node):
+        self.on_move = True
+        self.direction_node = node
+        self.direction_x = int(node.center_x)
+        self.direction_y = int(node.center_y)
+
+        diff_x = self.direction_x - self.center_x
+        diff_y = self.direction_y - self.center_y
+
+        angle = math.atan2(diff_y, diff_x)
+
+        self.angle = math.degrees(angle) - 18
+
+        self.change_x = math.cos(angle) * self.speed
+        self.change_y = math.sin(angle) * self.speed
 
     """
         Ajouter un noeud a la list de noeud pour retrouver son chemin
