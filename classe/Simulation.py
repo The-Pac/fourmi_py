@@ -1,17 +1,16 @@
 import random
 
 import arcade
-
 from classe import Graph
 from classe.Fourmi import Fourmi
 
 # --- Constants ---
-NODE_NBR = 500
+NODE_NBR = 7
 # minim 2 pair
 NODE_PAIR_NBR = 2
 
-FOURMI_NBR = 1000
-FOURMI_SPEED = 2
+FOURMI_NBR = 5
+FOURMI_SPEED = 1.5
 
 NODE_CIRCLE_RADIUS = 15
 FOURMI_CIRCLE_RADIUS = 5
@@ -86,4 +85,4 @@ class Simulation(arcade.Window):
                              bar[2], bar[3], color, 1)
 
         for node in self.list_node:
-            arcade.draw_text(str(node.name), node.center_x - 7.5, node.center_y - 7.5, arcade.color.BLACK, bold=True)
+            arcade.draw_text(str(node.name), node.center_x - 7, node.center_y - 7, arcade.color.BLACK, bold=True)

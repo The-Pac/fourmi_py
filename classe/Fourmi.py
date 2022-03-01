@@ -73,13 +73,9 @@ class Fourmi(arcade.Sprite):
                         self.searching = True
 
         else:
-            if int(self.center_x) == int(self.direction_x) \
-                    or int(self.center_x) == int(self.direction_x + 1) \
-                    or int(self.center_x) == int(self.direction_x - 1) \
-                    or int(self.center_y) == int(self.direction_y) \
-                    or int(self.center_y) == int(self.direction_y + 1) \
-                    or int(self.center_y) == int(self.direction_y - 1):
-                print("true")
+
+            if math.sqrt((int(self.center_x) - int(self.direction_x)) ** 2 + (
+                    int(self.center_y) - int(self.direction_y)) ** 2) <= 1:
                 self.on_move = False
                 self.change_x = 0
                 self.change_y = 0
